@@ -16,6 +16,7 @@ public class Ln extends AbstractMathFunction{
     }
     @Override
     public BigDecimal calculate(BigDecimal x, BigDecimal precision) {
+        super.validate(x, precision);
         BigDecimal prev;
         BigDecimal curr = BigDecimal.ZERO;
         int iteration = 1;

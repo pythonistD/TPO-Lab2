@@ -25,6 +25,7 @@ public class CsvWriter {
         }
         file.createNewFile();
         final PrintWriter printWriter = new PrintWriter(file);
+        printWriter.println("Аргумент, Результаты модуля " + function.toString());
         for (BigDecimal current = from; current.compareTo(to) <= 0; current = current.add(step)) {
             printWriter.println(current + "," + function.calculate(current, precision));
         }

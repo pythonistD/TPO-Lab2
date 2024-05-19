@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.logging.Logger;
 
+import static java.math.RoundingMode.HALF_EVEN;
 import static java.math.RoundingMode.HALF_UP;
 
 public class FunctionSystem extends AbstractMathFunction{
@@ -42,15 +43,21 @@ public class FunctionSystem extends AbstractMathFunction{
     public BigDecimal calculate(BigDecimal x, BigDecimal precision) {
         validate(x, precision);
         if(x.compareTo(BigDecimal.ZERO) <= 0){
-            return (((csc.calculate(x, precision).add(cos.calculate(x, precision)))
-                    .divide(cos.calculate(x, precision), 10, HALF_UP)
+            return (((csc.calculate(x, precision).add(cos.calculate(x, precision))).divide(cos.calculate(x, precision), HALF_UP)).pow(6))
+                    .divide(
+                            sin.calculate(x, precision).multiply(
+                                    (cot.calculate(x, precision).divide(csc.calculate(x, precision), HALF_UP))
+                            ), HALF_UP
+                    ).setScale(4, HALF_UP);
+            /*return (((csc.calculate(x, precision).add(cos.calculate(x, precision)))
+                    .divide(cos.calculate(x, precision), 5, HALF_UP)
                     ).pow(3).pow(2))
                     .divide((sin.calculate(x, precision)
                             .multiply((cot.calculate(x, precision).
-                                    divide(csc.calculate(x, precision), 10, HALF_UP)))), 10, HALF_UP);
+                                    divide(csc.calculate(x, precision), 5, HALF_UP)))), 5, HALF_UP);*/
         } else {
             return log3.calculate(x, precision).multiply(log2.calculate(x, precision)).multiply(log3.calculate(x, precision))
-                    .divide(ln.calculate(x, precision).add(log10.calculate(x, precision)), 10, HALF_UP).subtract(log10.calculate(x, precision)).pow(2);
+                    .divide(ln.calculate(x, precision).add(log10.calculate(x, precision)), 4, HALF_UP).subtract(log10.calculate(x, precision)).pow(2).setScale(4, HALF_UP);
         }
     }
 }

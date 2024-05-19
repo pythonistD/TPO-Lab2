@@ -14,6 +14,10 @@ public class Csc extends AbstractMathFunction{
         super();
         sin = new Sin();
     }
+    Csc(Sin sin){
+        super();
+        this.sin = sin;
+    }
 
     Csc(int iterations){
         sin = new Sin(iterations);

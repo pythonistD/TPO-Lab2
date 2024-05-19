@@ -19,8 +19,19 @@ public class Cot extends AbstractMathFunction{
         sin = new Sin(iterations);
         cos = new Cos(iterations);
     }
+    public Cot(Sin sin, Cos cos){
+        super();
+        this.sin = sin;
+        this.cos = cos;
+    }
     @Override
     public BigDecimal calculate(BigDecimal x, BigDecimal precision) {
-        return cos.calculate(x, precision).divide(sin.calculate(x, precision), 10, RoundingMode.HALF_UP);
+        super.validate(x, precision);
+        BigDecimal cosResult = cos.calculate(x, BigDecimal.valueOf(0.0001));
+        BigDecimal sinResult = sin.calculate(x, precision);
+        if(sinResult.compareTo(BigDecimal.ZERO) == 0){
+            throw new ArithmeticException("sin(x) = 0");
+        }
+        return cosResult.divide(sinResult, 10, RoundingMode.HALF_UP);
     }
 }

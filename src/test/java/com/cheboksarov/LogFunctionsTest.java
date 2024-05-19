@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.*;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -57,6 +57,32 @@ public class LogFunctionsTest {
 
     @Nested
     class LogTest{
+        @ParameterizedTest
+        @CsvFileSource(resources = "/log10.csv", numLinesToSkip = 1)
+        public void log10FullyIsolatedTest(double val, int base, double ln1_r, double ln2_r, double expectedResult){
+            Ln ln1 = Mockito.mock(Ln.class);
+            Ln ln2 = Mockito.mock(Ln.class);
+            Mockito.when(ln1.calculate(BigDecimal.valueOf(val), precision)).thenReturn(BigDecimal.valueOf(ln1_r));
+            Mockito.when(ln2.calculate(BigDecimal.valueOf(10), precision)).thenReturn(BigDecimal.valueOf(ln2_r));
+            Log log = new Log(base, ln1, ln2);
+            assertEquals(expectedResult, log.calculate(BigDecimal.valueOf(val), precision).doubleValue(), tolerance);
+        }
+
+        @ParameterizedTest
+        @ValueSource(doubles = {1.0, 5.0, 3.0, 4.23, 2.221})
+        public void logLnCallsTest(double val){
+            Ln ln1 = Mockito.mock(Ln.class);
+            Ln ln2 = Mockito.mock(Ln.class);
+            Log log3 = new Log(3, ln1, ln2);
+
+            Mockito.when(ln1.calculate(BigDecimal.valueOf(val), precision)).thenReturn(BigDecimal.ONE);
+            Mockito.when(ln2.calculate(BigDecimal.valueOf(3), precision)).thenReturn(BigDecimal.ONE);
+            log3.calculate(BigDecimal.valueOf(val), precision);
+
+            Mockito.verify(ln1, Mockito.times(1)).calculate(BigDecimal.valueOf(val), precision);
+            Mockito.verify(ln2, Mockito.times(1)).calculate(BigDecimal.valueOf(3), precision);
+
+        }
 
 
         @ParameterizedTest
@@ -69,6 +95,15 @@ public class LogFunctionsTest {
             }
 
         }
+    }
+    @Test
+    public void negativeValueTest(){
+        Log log3 = new Log(3);
+        assertThrows(IllegalArgumentException.class, () -> log3.calculate(BigDecimal.valueOf(-1.0), precision));
+    }
+    @Test
+    public void negativeBaseTest(){
+        assertThrows(IllegalArgumentException.class, () -> new Log(-3));
     }
     static class LogArgumentSource implements ArgumentsProvider {
         @Override

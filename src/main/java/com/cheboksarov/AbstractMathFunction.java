@@ -32,4 +32,8 @@ public abstract class AbstractMathFunction implements MathFunction{
         }
     }
 
+    @Override
+    public String toString() {
+        return this.getClass().getName();
+    }
 }

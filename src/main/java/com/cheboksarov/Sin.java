@@ -34,6 +34,7 @@ public class Sin extends AbstractMathFunction{
     @Override
     public BigDecimal calculate(final BigDecimal x, final BigDecimal precision)
             throws ArithmeticException {
+        super.validate(x, precision);
 
         double X = x.doubleValue();
 

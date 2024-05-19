@@ -2,6 +2,9 @@ package com.cheboksarov;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class App {
@@ -13,11 +16,18 @@ public class App {
                 "sin", new Sin(),
                 "cos", new Cos(),
                 "cot", new Cot(),
-                "csc", new Csc()
+                "csc", new Csc(),
+                "system", new FunctionSystem(),
+                "ln", new Ln()
         );
         MathFunction func = t2func.get(args[0]);
         if (func == null) {
-            throw new IllegalArgumentException("Unknown function");
+            if (args[0].startsWith("log_")){
+                int base = Integer.parseInt(args[0].split("_")[1]);
+                func = new Log(base);
+            }else{
+                throw new IllegalArgumentException("Unknown function");
+            }
         }
 
         BigDecimal start = BigDecimal.valueOf(Double.parseDouble(args[1]));
@@ -25,7 +35,10 @@ public class App {
         BigDecimal step = BigDecimal.valueOf(Double.parseDouble(args[3]));
         BigDecimal precision = BigDecimal.valueOf(Double.parseDouble(args[4]));
 
-        String fileName = "csv/" + args[0] + ".csv";
+        LocalDateTime localDate = LocalDateTime.now();
+        String f_date = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+
+        String fileName = "csv/" + args[0] + "_" + f_date + ".csv";
         CsvWriter.write(fileName, func, start, end, step, precision);
 
     }
